@@ -38,8 +38,8 @@ export const t: Record<string, Tx> = {
     fr: "Géoparc UNESCO — Pays de Buzău",
   },
   tagline: {
-    ro: "Gourmet experience & Life Style",
-    en: "Gourmet experience & Life Style",
+    ro: "Gourmet Experience & Lifestyle",
+    en: "Gourmet Experience & Lifestyle",
     es: "Experiencia gourmet & Estilo de vida",
     ru: "Гурмэ опыт и стиль жизни",
     ar: "تجربة طعام راقية ونمط حياة",
@@ -114,6 +114,28 @@ export const t: Record<string, Tx> = {
   nut_protein: { ro: "Proteine", en: "Protein", es: "Proteínas", ru: "Белки", ar: "البروتين", it: "Proteine", fr: "Protéines" },
   nut_salt: { ro: "Sare", en: "Salt", es: "Sal", ru: "Соль", ar: "الملح", it: "Sale", fr: "Sel" },
   nut_fiber: { ro: "Fibre", en: "Fiber", es: "Fibra", ru: "Клетчатка", ar: "الألياف", it: "Fibre", fr: "Fibres" },
+
+  portion_per_100g: { ro: "preț / 100 g", en: "price / 100 g", es: "precio / 100 g", ru: "цена / 100 г", ar: "السعر / 100 غ", it: "prezzo / 100 g", fr: "prix / 100 g" },
+  portion_pcs: { ro: "buc.", en: "pcs", es: "uds.", ru: "шт.", ar: "قطع", it: "pz.", fr: "pcs" },
+  portion_scoop: { ro: "cupă", en: "scoop", es: "bola", ru: "шарик", ar: "كرة", it: "pallina", fr: "boule" },
+  nutrition_calc_note: {
+    ro: "Valori calculate din rețetă, orientative.",
+    en: "Values calculated from the recipe, for guidance.",
+    es: "Valores calculados a partir de la receta, orientativos.",
+    ru: "Значения рассчитаны по рецепту, ориентировочные.",
+    ar: "قيم محسوبة من الوصفة، تقديرية.",
+    it: "Valori calcolati dalla ricetta, indicativi.",
+    fr: "Valeurs calculées à partir de la recette, à titre indicatif.",
+  },
+  frozen_note: {
+    ro: "Conține ingredient provenit din produs congelat.",
+    en: "Contains an ingredient from a frozen product.",
+    es: "Contiene un ingrediente procedente de un producto congelado.",
+    ru: "Содержит ингредиент из замороженного продукта.",
+    ar: "يحتوي على مكوّن من منتج مجمّد.",
+    it: "Contiene un ingrediente proveniente da un prodotto surgelato.",
+    fr: "Contient un ingrédient issu d'un produit surgelé.",
+  },
 
   // Footer
   house_creation_legend: {
@@ -198,6 +220,14 @@ export const CATEGORY_TX: Record<string, Tx> = {
   "Garnituri": { ro: "Garnituri", en: "Sides", es: "Guarniciones", ru: "Гарниры", ar: "أطباق جانبية", it: "Contorni", fr: "Accompagnements" },
   "Meniu copii": { ro: "Meniu copii", en: "Kids Menu", es: "Menú Infantil", ru: "Детское меню", ar: "قائمة الأطفال", it: "Menù Bambini", fr: "Menu Enfants" },
   "Desert": { ro: "Desert", en: "Desserts", es: "Postres", ru: "Десерты", ar: "حلويات", it: "Dessert", fr: "Desserts" },
+  "Antreuri": { ro: "Antreuri", en: "Starters", es: "Entrantes", ru: "Закуски", ar: "مقبلات", it: "Antipasti", fr: "Entrées" },
+  "Supe și creme": { ro: "Supe și creme", en: "Soups & Creams", es: "Sopas y Cremas", ru: "Супы и крем-супы", ar: "حساء وكريمات", it: "Zuppe e Vellutate", fr: "Soupes et Crèmes" },
+  "Paste și risotto": { ro: "Paste și risotto", en: "Pasta & Risotto", es: "Pasta y Risotto", ru: "Паста и ризотто", ar: "معكرونة وريزوتو", it: "Pasta e Risotto", fr: "Pâtes et Risotto" },
+  "Oaie și miel": { ro: "Oaie și miel", en: "Mutton & Lamb", es: "Oveja y Cordero", ru: "Баранина и ягнятина", ar: "غنم وحَمَل", it: "Pecora e Agnello", fr: "Mouton et Agneau" },
+  "Vânat": { ro: "Vânat", en: "Game", es: "Caza", ru: "Дичь", ar: "لحوم الصيد", it: "Selvaggina", fr: "Gibier" },
+  "Preparate vegetariene": { ro: "Preparate vegetariene", en: "Vegetarian Dishes", es: "Platos Vegetarianos", ru: "Вегетарианские блюда", ar: "أطباق نباتية", it: "Piatti Vegetariani", fr: "Plats Végétariens" },
+  "Salate de însoțire": { ro: "Salate de însoțire", en: "Side Salads", es: "Ensaladas de Acompañamiento", ru: "Салаты к блюдам", ar: "سلطات جانبية", it: "Insalate di Contorno", fr: "Salades d'Accompagnement" },
+  "Deserturi": { ro: "Deserturi", en: "Desserts", es: "Postres", ru: "Десерты", ar: "حلويات", it: "Dessert", fr: "Desserts" },
   "Info alergeni": { ro: "Info alergeni", en: "Allergen Info", es: "Info Alérgenos", ru: "Информация об аллергенах", ar: "معلومات الحساسية", it: "Info Allergeni", fr: "Info Allergènes" },
 
   // Drinks
@@ -242,6 +272,13 @@ export function tx(key: string, locale: Locale): string {
   const entry = t[key];
   if (!entry) return key;
   return entry[locale] || entry.ro || key;
+}
+
+export function txPortion(portion: string, locale: Locale): string {
+  return portion
+    .replace("preț / 100 g", tx("portion_per_100g", locale))
+    .replace("buc.", tx("portion_pcs", locale))
+    .replace("cupă", tx("portion_scoop", locale));
 }
 
 export function txCategory(name: string, locale: Locale): string {

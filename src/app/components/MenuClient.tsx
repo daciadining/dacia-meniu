@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useLocale } from "../../contexts/LocaleContext";
-import { tx, txCategory, txAllergen } from "../../lib/dictionary";
+import { tx, txCategory, txAllergen, txPortion } from "../../lib/dictionary";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 
 // ── Types ──────────────────────────────────────────────────────
@@ -15,7 +15,7 @@ export interface MenuNutrition {
   sugars_g: number;
   protein_g: number;
   salt_g: number;
-  fiber_g: number;
+  fiber_g?: number;
 }
 
 export interface MenuItem {
@@ -31,19 +31,23 @@ export interface MenuItem {
   nutrition_completeness: number;
   // Optional per-locale translations (filled by translate_items.py).
   // Locale codes: en, es, ru, ar, it, fr (RO is the source).
+  name_tx?: Record<string, string>;
   description_tx?: Record<string, string>;
   ingredients_tx?: Record<string, string>;
+  frozen?: boolean;
 }
 
 export interface MenuCategory {
   id: string;
   name: string;
   subtitle: string | null;
+  subtitle_tx?: Record<string, string>;
   items: MenuItem[];
 }
 
 export interface ToppingItem {
   name: string;
+  name_tx?: Record<string, string>;
   portion: string;
   price: number;
 }
@@ -95,7 +99,7 @@ function n(val: number | undefined | null): string {
 
 function formatPrice(price: number | null): string {
   if (price === null) return "";
-  return `${price} lei`;
+  return `${price} RON`;
 }
 
 // ── Sub-components ─────────────────────────────────────────────
@@ -285,6 +289,7 @@ function NutritionPanel({
       <p className="text-xs font-semibold text-brand-gold-dark mb-1.5">
         {tx("nutrition_title", locale)} &mdash; {labelText}
       </p>
+      <p className="text-[10px] italic text-brand-text-dim mb-1.5">{tx("nutrition_calc_note", locale)}</p>
       <table className="w-full text-xs">
         <tbody className="divide-y divide-brand-border/40">
           <tr>
@@ -333,12 +338,14 @@ function NutritionPanel({
               {n(nut.salt_g)} g
             </td>
           </tr>
+          {nut.fiber_g != null && (
           <tr>
             <td className="py-1 text-brand-text-secondary">{tx("nut_fiber", locale)}</td>
             <td className="py-1 text-right text-brand-text-primary">
               {n(nut.fiber_g)} g
             </td>
           </tr>
+          )}
         </tbody>
       </table>
     </div>
@@ -409,7 +416,7 @@ function MenuItemCard({ item }: { item: MenuItem }) {
               <span className="text-brand-star text-sm flex-shrink-0">&#9733;</span>
             )}
             <p className="text-sm font-medium text-brand-text-primary leading-snug">
-              {item.name}
+              {item.name_tx?.[locale] || item.name}
             </p>
           </div>
           {description && (
@@ -429,7 +436,7 @@ function MenuItemCard({ item }: { item: MenuItem }) {
           )}
           {item.portion && (
             <span className="text-[11px] text-brand-text-dim mt-0.5">
-              {item.portion}
+              {txPortion(item.portion, locale)}
             </span>
           )}
           <svg
@@ -455,6 +462,11 @@ function MenuItemCard({ item }: { item: MenuItem }) {
                 </p>
                 <p className="text-xs text-brand-text-secondary leading-relaxed">
                   {ingredients}
+                  {item.frozen && (
+                    <span className="block mt-1 italic text-brand-text-dim">
+                      * {tx("frozen_note", locale)}
+                    </span>
+                  )}
                 </p>
               </div>
             )}
@@ -484,11 +496,11 @@ function ToppingSection({
         {items.map((t) => (
           <div key={t.name} className="flex justify-between items-center py-1">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-brand-text-secondary">{t.name}</span>
+              <span className="text-xs text-brand-text-secondary">{t.name_tx?.[locale] || t.name}</span>
               <span className="text-[11px] text-brand-text-dim">{t.portion}</span>
             </div>
             <span className="text-xs font-medium text-brand-gold">
-              +{t.price} lei
+              +{t.price} RON
             </span>
           </div>
         ))}
@@ -522,7 +534,7 @@ function CategorySection({
           className="text-xs text-brand-text-dim text-center italic mb-3"
           style={{ fontFamily: "var(--font-heading)" }}
         >
-          {category.subtitle}
+          {category.subtitle_tx?.[locale] || category.subtitle}
         </p>
       )}
       <div>
@@ -531,7 +543,7 @@ function CategorySection({
         ))}
       </div>
       {toppings && toppings.length > 0 && (
-        <ToppingSection title={category.name.toLowerCase()} items={toppings} />
+        <ToppingSection title={txCategory(category.name, locale).toLowerCase()} items={toppings} />
       )}
     </section>
   );
@@ -616,6 +628,7 @@ export default function MenuClient({
           items = items.filter(
             (it) =>
               it.name.toLowerCase().includes(q) ||
+              Object.values(it.name_tx ?? {}).some((v) => v.toLowerCase().includes(q)) ||
               it.description.toLowerCase().includes(q) ||
               it.ingredients.toLowerCase().includes(q)
           );
